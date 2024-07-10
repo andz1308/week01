@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+#define MAX_SIZE 100
 
 //bai6
 //int tinhtuoi(char *gender) {
@@ -70,24 +72,170 @@
 //}
 
 //bai7
-//void nhapM1C_SoNguyen(int * &a, int &n)
-//{ //a và n là tham chiếu vì sau khi nhập giá trị, a và n cần giữ các giá trị mới nhận trong hàm
-//	n = 10;
-//	a = (int *)malloc(n*sizeof(int)); // cấp phát a co 10 phần tử
-//	for (int i = 0; i < n; i++)
-//		*(a + i) = rand() % 100;
-//}
-//void xuatM1C_SoNguyen(int *a, int n)
-//{
-//	for (int i = 0; i < n; i++)
-//	{
-//		printf("\nPhan tu thu %d co gia tri %d va dia chi o nho la %x", i, *(a + i), a + i);
-//		printf("\nPhan tu thu %d co gia tri %d va dia chi o nho la %x", i, a[i], a + i);
-//	}
-//}
-//void main()
-//{
-//	int *a, n = 0;
-//	nhapM1C_SoNguyen(a, n);
-//	xuatM1C_SoNguyen(a, n);
-//}
+int* find_max(int a[], int size) {
+	if (size <= 0) return NULL;
+
+	int *max_ptr = &a[0];
+
+	for (int i = 1; i < size; ++i) {
+		if (a[i] > *max_ptr) {
+			max_ptr = &a[i];
+		}
+	}
+
+	return max_ptr;
+}
+
+// Hàm xuất địa chỉ của phần tử chẵn lớn nhất và phần tử lẻ nhỏ nhất
+void print_max_even_min_odd(int a[], int size) {
+	int *max_even_ptr = NULL;
+	int *min_odd_ptr = NULL;
+
+	for (int i = 0; i < size; ++i) {
+		if (a[i] % 2 == 0) {
+			if (max_even_ptr == NULL || a[i] > *max_even_ptr) {
+				max_even_ptr = &a[i];
+			}
+		}
+		else {
+			if (min_odd_ptr == NULL || a[i] < *min_odd_ptr) {
+				min_odd_ptr = &a[i];
+			}
+		}
+	}
+
+	if (max_even_ptr != NULL) {
+		printf("dia chi phan tu lon nhat: %p\n", max_even_ptr);
+	}
+	else {
+		printf("Khong co phan tu chan trong mang\n");
+	}
+
+	if (min_odd_ptr != NULL) {
+		printf("dia chi cua phan tu nho nhat: %p\n", min_odd_ptr);
+	}
+	else {
+		printf("Khong co phan tu le trong mang.\n");
+	}
+}
+
+// Hàm xóa phần tử có giá trị 0 khỏi mảng a
+int remove_zeros(int a[], int *size) {
+	int count_removed = 0;
+
+	for (int i = 0; i < *size; ++i) {
+		if (a[i] == 0) {
+			for (int j = i; j < *size - 1; ++j) {
+				a[j] = a[j + 1];
+			}
+			*size -= 1;
+			count_removed += 1;
+			i--; // Xét lại vị trí hiện tại sau khi xóa
+		}
+	}
+
+	return count_removed;
+}
+
+// Hàm thêm phần tử x vào đầu mảng a
+void add_element_to_beginning(int a[], int *size, int x) {
+	for (int i = *size; i > 0; --i) {
+		a[i] = a[i - 1];
+	}
+	a[0] = x;
+	*size += 1;
+}
+
+// Hàm kiểm tra xem số có phải là số chính phương hay không
+int is_perfect_square(float x) {
+	int s = sqrt(x);
+	return s * s == x;
+}
+
+// Hàm tính tổng các phần tử là số chính phương trong mảng a
+int sum_perfect_squares(int a[], int size) {
+	int sum = 0;
+
+	for (int i = 0; i < size; ++i) {
+		if (is_perfect_square(a[i])) {
+			sum += a[i];
+		}
+	}
+
+	return sum;
+}
+
+int is_local_maximum(int a[], int size, int index) {
+	if (index >= 0 && index < size) {
+		int current_value = a[index];
+		int left_value = (index > 0) ? a[index - 1] : current_value - 1;
+		int right_value = (index < size - 1) ? a[index + 1] : current_value - 1;
+
+		return current_value > left_value && current_value > right_value;
+	}
+
+	return 0;
+}
+
+void print_local_maximums(int a[], int size) {
+	printf("cac so cuc dai trong bang a: ");
+	for (int i = 0; i < size; ++i) {
+		if (is_local_maximum(a, size, i)) {
+			printf("%d ", a[i]);
+		}
+	}
+	printf("\n");
+}
+
+int main()
+{
+	int a[MAX_SIZE];
+	int size;
+
+	// Nhập số phần tử của mảng
+	printf("Nhap so mang: ");
+	scanf_s("%d", &size);
+
+	// Nhập các phần tử của mảng
+	printf("Nhap cac phan tu cua mang:\n");
+	for (int i = 0; i < size; ++i) {
+		printf("a[%d] = ", i);
+		scanf_s("%d", &a[i]);
+	}
+
+	// a. Tìm phần tử lớn nhất và in ra địa chỉ của nó
+	int *max_ptr = find_max(a, size);
+	if (max_ptr != NULL) {
+		printf("phan tu lon nhat trong mang la %d, dia chi cua no la %p\n", *max_ptr, max_ptr);
+	}
+	else {
+		printf("mang rong\n");
+	}
+
+	// b. Xuất địa chỉ của phần tử chẵn lớn nhất và phần tử lẻ nhỏ nhất
+	print_max_even_min_odd(a, size);
+
+	// c. Xóa phần tử có giá trị 0
+	int removed_count = remove_zeros(a, &size);
+	printf("da xoa %d ptu co gtri 0 ra khoi mang.\n", removed_count);
+
+	// d. Thêm phần tử x vào đầu mảng
+	float x;
+	printf("Nhap phan tu x de them vao dau mang: ");
+	scanf_s("%f", &x);
+	add_element_to_beginning(a, &size, x);
+	printf("mang sau khi them phan tu x: ");
+	for (int i = 0; i < size; ++i) {
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+
+	// e. Tính tổng các phần tử là số chính phương
+	int sum_square = sum_perfect_squares(a, size);
+	printf("tong cac so chinh phuong trong mang la: %d\n", sum_square);
+
+	// f. Xuất các số cực đại trong mảng
+	print_local_maximums(a, size);
+
+	return 0;
+}
